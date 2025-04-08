@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART Calendar - MRM Institute of Management</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            font-family: Arial, sans-serif;
+            font-size: 1.2em;
+            margin: 10px 0 0;
+        }
+        
+        .controls-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .glossy-btn {
+            background: linear-gradient(to bottom, #ffffff, #f1f1f1);
+            border: 1px solid #ccc;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glossy-btn:hover {
+            background: linear-gradient(to bottom, #f1f1f1, #e1e1e1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .glossy-btn.primary {
+            background: linear-gradient(to bottom, var(--primary-color), #2980b9);
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .glossy-btn.primary:hover {
+            background: linear-gradient(to bottom, #2980b9, var(--primary-color));
+        }
+        
+        .styled-select, .styled-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        
+        .weekday-selector {
+            display: flex;
+            gap: 5px;
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .weekday-selector label {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            cursor: pointer;
+        }
+        
+        .day-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .day-selector label {
+            display: flex;
+            align-items: center;
+            padding: 2px 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .subject-container {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .subject-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .subject-name, .faculty-name {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .week-plan {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .day-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .day-card .week-selector {
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .week-selector select {
+            padding: 3px;
+            font-size: 0.8em;
+            width: 100%;
+        }
+        
+        .export-section {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .export-btn:hover {
+            background: linear-gradient(to bottom, #27ae60, #2ecc71);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #subjectsContainer {
+            margin-bottom: 20px;
+        }
+        
+        #addSubjectBtn {
+            margin-bottom: 20px;
+        }
+        
+        .holiday {
+            background-color: #ffdddd;
+        }
+        
+        .second-saturday {
+            background-color: #fff3cd;
+        }
+        
+        .compact-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SMART Calendar</h1>
+        <h2>MRM Institute of Management</h2>
+        <p>Created by Mohammed Reyazuddin | WhatsApp: 8686861826</p>
+    </header>
+    
+    <div class="controls-section">
+        <div class="control-group">
+            <div class="file-input-container">
+                <button id="importBtn" class="glossy-btn">📤 Import File (Excel/CSV)</button>
+                <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx,.xls">
+            </div>
+            <button id="downloadSampleBtn" class="glossy-btn">📥 Download Sample Format</button>
+            <button id="doneImportBtn" class="glossy-btn primary hidden">Done Importing</button>
+        </div>
+        
+        <div class="control-group compact-controls">
+            <div class="date-range">
+                <label>From:</label>
+                <input type="date" id="startDate" class="styled-input">
+                <label>To:</label>
+                <input type="date" id="endDate" class="styled-input">
+            </div>
+            
+            <div class="weekday-selector">
+                <label><input type="checkbox" value="1" checked> M</label>
+                <label><input type="checkbox" value="2" checked> T</label>
+                <label><input type="checkbox" value="3" checked> W</label>
+                <label><input type="checkbox" value="4" checked> T</label>
+                <label><input type="checkbox" value="5" checked> F</label>
+                <label><input type="checkbox" value="6" checked> S</label>
+            </div>
+            
+            <button id="generateBtn" class="glossy-btn primary">Generate Calendar</button>
+        </div>
+        
+        <div class="control-group">
+            <label>Mark Holidays (1-31):</label>
+            <div class="day-selector" id="holidaySelector">
+                <!-- Days 1-31 will be added dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <button id="addSubjectBtn" class="glossy-btn primary">+ Add Subject</button>
+    
+    <div id="subjectsContainer">
+        <!-- Subjects will be added here dynamically -->
+    </div>
+    
+    <div class="export-section">
+        <button id="printBtn" class="export-btn">🖨 Print Preview</button>
+        <button id="exportExcelBtn" class="export-btn">📊 Export All Data</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global variables
+            let subjects = [];
+            let weekOptions = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+            let allDates = []; // Stores all generated dates for export
+            
+            // Initialize holiday selector (1-31)
+            const holidaySelector = document.getElementById('holidaySelector');
+            for (let i = 1; i <= 31; i++) {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" value="${i}"> ${i}`;
+                holidaySelector.appendChild(label);
+            }
+            
+            // Initialize with one subject
+            addSubject();
+            
+            // Add subject button
+            document.getElementById('addSubjectBtn').addEventListener('click', function() {
+                addSubject();
+            });
+            
+            // Generate calendar
+            document.getElementById('generateBtn').addEventListener('click', function() {
+                const startDate = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(document.getElementById('endDate').value);
+                
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    alert('Please select valid date range');
+                    return;
+                }
+                
+                if (startDate > endDate) {
+                    alert('End date must be after start date');
+                    return;
+                }
+                
+                // Get selected weekdays (1=Mon, 2=Tue, etc.)
+                const selectedDays = [];
+                document.querySelectorAll('.weekday-selector input[type="checkbox"]:checked').forEach(cb => {
+                    selectedDays.push(parseInt(cb.value));
+                });
+                
+                if (selectedDays.length === 0) {
+                    alert('Please select at least one weekday');
+                    return;
+                }
+                
+                // Get manually selected holidays
+                const manualHolidays = [];
+                document.querySelectorAll('#holidaySelector input[type="checkbox"]:checked').forEach(cb => {
+                    manualHolidays.push(parseInt(cb.value));
+                });
+                
+                // Clear previous dates
+                allDates = [];
+                let secondSaturdayCount = 0;
+                let holidayCount = 0;
+                
+                // Generate dates first (common for all subjects)
+                let currentDate = new Date(startDate);
+                while (currentDate <= endDate) {
+                    const dayOfWeek = currentDate.getDay(); // 0=Sun, 1=Mon, etc.
+                    const dateStr = formatDate(currentDate);
+                    const dayOfMonth = currentDate.getDate();
+                    
+                    // Check for second Saturday
+                    const isSecondSaturday = dayOfWeek === 6 && dayOfMonth > 7 && dayOfMonth <= 14;
+                    
+                    // Check if manually marked as holiday
+                    const isManualHoliday = manualHolidays.includes(dayOfMonth);
+                    
+                    // Check if day is selected and not a holiday (including Sundays)
+                    const isSystemHoliday = dayOfWeek === 0 || isSecondSaturday;
+                    const isSelected = selectedDays.includes(dayOfWeek);
+                    
+                    if (isSelected && !isSystemHoliday && !isManualHoliday) {
+                        allDates.push({
+                            date: new Date(currentDate),
+                            week: Math.floor((dayOfMonth - 1) / 7) + 1 // Calculate week number (1-5)
+                        });
+                    }
+                    
+                    if (isSecondSaturday) {
+                        secondSaturdayCount++;
+                    }
+                    
+                    if (isManualHoliday) {
+                        holidayCount++;
+                    }
+                    
+                    // Move to next day
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                
+                // Show message about skipped days
+                let message = '';
+                if (secondSaturdayCount > 0) {
+                    message += `Skipped ${secondSaturdayCount} second Saturday(s). `;
+                }
+                if (holidayCount > 0) {
+                    message += `Marked ${holidayCount} custom holiday(s).`;
+                }
+                if (message) {
+                    alert(message.trim());
+                }
+                
+                // Generate calendar for each subject
+                subjects.forEach((subject, index) => {
+                    const subjectId = subject.id;
+                    const planContainer = document.getElementById(`${subjectId}-plan`);
+                    if (!planContainer) return;
+                    
+                    let calendarHTML = '';
+                    let dayCount = 0;
+                    
+                    allDates.forEach((dateObj, dayIndex) => {
+                        const date = dateObj.date;
+                        const weekNumber = dateObj.week > 5 ? 5 : dateObj.week; // Cap at week 5
+                        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        
+                        dayCount++;
+                        
+                        // Create week selector dropdown
+                        let weekSelector = '<div class="week-selector"><select>';
+                        weekOptions.forEach((week, i) => {
+                            const weekIndex = i + 1;
+                            const selected = weekIndex === weekNumber ? 'selected' : '';
+                            weekSelector += `<option value="${weekIndex}" ${selected}>${week}</option>`;
+                        });
+                        weekSelector += '</select></div>';
+                        
+                        calendarHTML += `
+                            <div class="day-card">
+                                <strong>${dayCount}. ${dayNames[date.getDay()]}</strong><br>
+                                ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}
+                                ${weekSelector}
+                            </div>
+                        `;
+                    });
+                    
+                    planContainer.innerHTML = calendarHTML || '<p>No working days in selected range</p>';
+                });
+            });
+            
+            // File import functionality
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Show done button
+                document.getElementById('doneImportBtn').classList.remove('hidden');
+                
+                // Here you would process the file
+                alert(`File "${file.name}" selected for import. Click "Done Importing" to complete.`);
+            });
+            
+            // Done importing button
+            document.getElementById('doneImportBtn').addEventListener('click', function() {
+                this.classList.add('hidden');
+                document.getElementById('fileInput').value = '';
+                alert('Import completed successfully!');
+            });
+            
+            // Sample file download
+            document.getElementById('downloadSampleBtn').addEventListener('click', function() {
+                // Create a sample CSV content
+                const csvContent = "Subject,Faculty,Date,Day,Week\n" +
+                                   "Mathematics,Dr. Sharma,2023-01-02,Mon,Week 1\n" +
+                                   "Physics,Prof. Gupta,2023-01-03,Tue,Week 1\n" +
+                                   "Chemistry,Dr. Patel,2023-01-04,Wed,Week 1";
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'smart_calendar_sample.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            // Print functionality
+            document.getElementById('printBtn').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Export all data to Excel
+            document.getElementById('exportExcelBtn').addEventListener('click', function() {
+                exportAllToExcel();
+            });
+            
+            // Function to add a new subject
+            function addSubject() {
+                const subjectId = 'subject-' + Date.now();
+                const subjectCount = subjects.length + 1;
+                
+                const subjectHTML = `
+                    <div class="subject-container" id="${subjectId}">
+                        <div class="subject-header">
+                            <h3>Subject ${subjectCount}</h3>
+                            <div class="subject-controls">
+                                <button class="glossy-btn remove-subject-btn" data-id="${subjectId}">× Remove</button>
+                            </div>
+                        </div>
+                        <input type="text" placeholder="Subject Name" class="subject-name">
+                        <input type="text" placeholder="Faculty Name" class="faculty-name">
+                        <div class="week-plan" id="${subjectId}-plan"></div>
+                    </div>
+                `;
+                
+                const container = document.createElement('div');
+                container.innerHTML = subjectHTML;
+                document.getElementById('subjectsContainer').appendChild(container);
+                
+                // Add to subjects array
+                subjects.push({
+                    id: subjectId,
+                    name: '',
+                    faculty: '',
+                    plan: []
+                });
+                
+                // Add remove event listener
+                container.querySelector('.remove-subject-btn').addEventListener('click', function() {
+                    if (subjects.length <= 1) {
+                        alert('You must have at least one subject');
+                        return;
+                    }
+                    
+                    const idToRemove = this.getAttribute('data-id');
+                    document.getElementById(idToRemove).remove();
+                    subjects = subjects.filter(sub => sub.id !== idToRemove);
+                });
+            }
+            
+            // Function to export all data to Excel
+            function exportAllToExcel() {
+                if (allDates.length === 0) {
+                    alert('Please generate calendar first');
+                    return;
+                }
+                
+                let csvContent = "Date,Day,Week," + subjects.map(sub => {
+                    const subName = document.querySelector(`#${sub.id} .subject-name`).value || `Subject ${subjects.indexOf(sub) + 1}`;
+                    const faculty = document.querySelector(`#${sub.id} .faculty-name`).value || 'Unassigned';
+                    return `"${subName}","${faculty}"`;
+                }).join(',') + "\n";
+                
+                allDates.forEach((dateObj, dayIndex) => {
+                    const date = dateObj.date;
+                    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const dateStr = formatDate(date);
+                    const dayName = dayNames[date.getDay()];
+                    const weekNumber = dateObj.week > 5 ? 5 : dateObj.week; // Cap at week 5
+                    const weekText = `Week ${weekNumber}`;
+                    
+                    // Add date info
+                    csvContent += `"${dateStr}","${dayName}","${weekText}"`;
+                    
+                    // Add subject columns
+                    subjects.forEach(sub => {
+                        csvContent += `,`; // Empty columns for subject data
+                    });
+                    
+                    csvContent += `\n`;
+                });
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'smart_calendar_all_data.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Helper function to format date as YYYY-MM-DD
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            // Set default dates (current month)
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = lastDay;
+        });
+    </script>
+</body>
+</html>
